@@ -32,7 +32,7 @@ export function CacheProvider({ children }){
                 [folderId]:{
                     data: data,
                     timestamp: Date.now(),
-                    expiresAt: Date.now() + 1000 * 60 * 5 
+                    expiresAt: Date.now() + 1000 * 60 * 1
                 }
             }))
         },
