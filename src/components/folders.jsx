@@ -1,33 +1,46 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { useCache } from "./cacheContext.jsx";
 
 const apiKey = "AIzaSyDrEKAsqwLQ9Z80CQbH-zGgJB7O7kicRCw"
 
 export default function Folders() {
     const { folderId } = useParams();
-    const [loading, setLoading] = useState(true);
-    const [cache, setCache] = useState({});
-    const navigate = useNavigate(); // Keep this line for context
+    const [loading, setLoading] = useState(true); 
+    const [files, setFiles] = useState({})
+    const {get, set, isValid} = useCache()
 
     useEffect(() => {
         async function fetchFiles(){
-            setLoading(true)
-            if (cache[folderId]){
-                console.log("Files already cached")
+            if (isValid(folderId)){
+                const cachedFiles = get(folderId) 
+                setFiles(prev => ({...prev, [folderId]: cachedFiles.data}))
                 setLoading(false)
+                console.log('files already cached for', folderId)
+                console.log(cachedFiles.data)
+                return
+            }
 
-            }else{
+            setLoading(true)
+            try {
                 const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&orderBy=createdTime desc&key=${apiKey}&fields=files(id,name,mimeType,webViewLink)`
                 const res = await fetch(url)
                 const data = await res.json()
-                setCache(prevCache => ({...prevCache, [folderId]: data.files}))
+
+                set(folderId, data.files)
+                setFiles(prev => ({...prev, [folderId]: data.files}))
+                console.log('fetched files for', folderId, data.files)
+            } catch (err) {
+                console.error('failed fetching files for', folderId, err)
+                set(folderId, [])
+            } finally {
                 setLoading(false)
             }
         }
         fetchFiles()
     }, [folderId]);
     
-    const filesList = cache[folderId] || [];
+    const filesList = files[folderId] || [];
     return (
         <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-100">
             <main className="max-w-4xl mx-auto py-12 px-4">
