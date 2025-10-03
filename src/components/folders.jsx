@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useCache } from "./cacheContext.jsx";
 
@@ -8,9 +8,14 @@ export default function Folders() {
     const { folderId } = useParams();
     const [loading, setLoading] = useState(true); 
     const [files, setFiles] = useState({})
+    const [teamName, setTeamName] = useState('')
     const {get, set, isValid} = useCache()
 
     useEffect(() => {
+        const storedTeamName = localStorage.getItem('teamName') || ''
+        setTeamName(storedTeamName)
+        console.log('Team Name from localStorage:', storedTeamName)
+
         async function fetchFiles(){
             if (isValid(folderId)){
                 const cachedFiles = get(folderId) 
@@ -46,7 +51,7 @@ export default function Folders() {
             <main className="max-w-4xl mx-auto py-12 px-4">
                 <div className="flex items-center gap-4 mb-8">
                     <h2 className="text-2xl font-semibold text-[#164464] flex items-center gap-2">
-                        <span className="text-[#e3a96f]">📄</span> Folder Contents
+                        <span className="text-[#e3a96f]"></span> {teamName} Contents
                     </h2>
                 </div>
 

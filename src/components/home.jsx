@@ -48,12 +48,18 @@ export default function Home() {
                             return (
                                 <button
                                     key={folder.id}
-                                    onClick={() => navigate(`/folders/${folder.id}`)}
+                                    onClick={(e) =>{
+                                        const text = e.target.textContent 
+                                        localStorage.setItem('teamName', text)
+                                        navigate(`/folders/${folder.id}`)}
+
+                                    }
                                     className="group flex flex-col items-center w-full bg-white/70 backdrop-blur-md rounded-xl shadow hover:shadow-md transition-all p-4 gap-2 border border-fuchsia-100 hover:bg-fuchsia-100/60 focus:outline-none focus:ring-2 focus:ring-fuchsia-400"
                                 >
-                                    <span className="text-fuchsia-500 text-3xl group-hover:scale-110 transition-transform drop-shadow">📁</span>
-                                    <span className="text-base font-medium text-center text-indigo-800 truncate w-full">
-                                        Team {team}
+                                    <span className="">
+                                        <span className="text-base font-medium text-center text-indigo-800 truncate w-full ">
+                                            📁Team {team}
+                                    </span>
                                     </span>
                                 </button>
                             );
