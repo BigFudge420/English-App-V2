@@ -15,7 +15,15 @@ export default function Home() {
             const url = `https://www.googleapis.com/drive/v3/files?q='${rootFolderId}'+in+parents+and+mimeType='application/vnd.google-apps.folder'&orderBy=name&key=${apiKey}&fields=files(id,name)`;
             const res = await fetch(url);
             const data = await res.json();
-            setFolders(data.files);
+
+            const sortedFolders = data.files.sort((a ,b) => {
+                const numA = parseInt(a.name.replace(/\D/g, ""), 10)
+                const numB = parseInt(b.name.replace(/\D/g, ""), 10)
+                
+                return numA - numB
+            })
+
+            setFolders(sortedFolders);
             setLoading(false);
         }
         fetchFolders();
@@ -42,7 +50,7 @@ export default function Home() {
                 )}
 
                 {!loading && folders.length > 0 && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 justify-items-center items-center">
                         {folders.map(folder => {
                             let team = folder.name.replace(/[^0-9]/g, "");
                             return (
